@@ -2,25 +2,28 @@ import psycopg2
 from psycopg2 import sql
 from datetime import date
 import requests
+import os
+from dotenv import load_dotenv
 
-AIRTABLE_BASE_ID = 'appPFtPl42cKzPk1f'
-AIRTABLE_TABLE_NAME = 'Psychotherapists'
-API_KEY = 'keyTB6bXM5hmHID2v'
-ENDPOINT = f'https://api.airtable.com/v0/{AIRTABLE_BASE_ID}/{AIRTABLE_TABLE_NAME}'
+load_dotenv()
+
+airtable_base_id = os.getenv('AIRTABLE_BASE_ID')
+airtable_table_name = os.getenv('AIRTABLE_TABLE_NAME')
+api_key = os.getenv('API_KEY')
+ENDPOINT = f'https://api.airtable.com/v0/{airtable_base_id}/{airtable_table_name}'
 
 
 def get_raw_data_from_airtable():
     """
     Получаем raw data из Airtable и превращаем их в словарь с ключом id записи в Airtable
     """
-    headers = {'Authorization': f'Bearer {API_KEY}'}
+    headers = {'Authorization': f'Bearer {api_key}'}
     try:
         raw_data = requests.get(url=ENDPOINT, headers=headers).json()
         return raw_data
     except requests.exceptions.HTTPError as err:
         print('HTTP Error occured')
         print('Response is: {content}'.format(content=err.response.content))
-
 
 
 def clean_data_from_airtable(raw_data):
@@ -72,14 +75,14 @@ def update_postgres(raw_data, airtable_cleaned_data):
     ids_from_postgres = [i[0] for i in ids_from_postgres]
 
     """
-    По полю therapist_id проверяем наличие в Postgres записей, которые были удалены из Airtable, удаляем их 
+    По полю therapist_id проверяем наличие в Postgres записей, которые были удалены из Airtable, удаляем их
     """
     for i in ids_from_postgres:
         if i not in airtable_cleaned_data.keys():
             cur.execute("DELETE FROM therapists_therapist WHERE therapist_id = %s", (i,))
 
     """
-    По полю therapist_id проверяем наличие в Airtable  записей, которые отсутствуют в Postgres, добавляем их
+    По полю therapist_id проверяем наличие в Airtable  записей, которых нет в Postgres, добавляем их
     """
     for i in airtable_cleaned_data.keys():
         if i not in ids_from_postgres:
@@ -90,11 +93,12 @@ def update_postgres(raw_data, airtable_cleaned_data):
             ther_photo_link = airtable_cleaned_data[i][3]
             ther_created_time = airtable_cleaned_data[i][4]
             cur.execute(
-                "INSERT INTO therapists_therapist(therapist_id, name, methods, photo_id, photo_link, created_time) "
+                "INSERT INTO therapists_therapist("
+                "therapist_id, name, methods, photo_id, photo_link, created_time) "
                 "VALUES(%s, %s, %s, %s, %s, %s)", (
                     ther_id, ther_name, ther_methods, ther_photo_id, ther_photo_link, ther_created_time
                 ))
-    print(airtable_cleaned_data)
+
     """
     Проверяем на актуальность существующие записи в Postgres, при необходимости обновляем их
     """
@@ -106,7 +110,7 @@ def update_postgres(raw_data, airtable_cleaned_data):
         4: "created_time"
     }
     for i in ids_from_postgres:
-        # получаем строку из Postgres, приводим ее к тому же виду, что и запись ключ-значение в airtable_cleaned_data
+        # получаем строку из Postgres, приводим ее к тому же виду, что и записи в airtable_cleaned_data
         cur.execute("SELECT therapist_id, name, methods, photo_id, photo_link, created_time "
                     "FROM therapists_therapist "
                     "WHERE therapist_id = %s", (i,))
@@ -119,9 +123,8 @@ def update_postgres(raw_data, airtable_cleaned_data):
                postgres_row[0][4],
                postgres_row[0][5]]
         postgres_cleaned_data[postgres_ther_id] = tmp
-        print(postgres_cleaned_data)
 
-        # сравниваем значения полей в двух таблицах, обновляем поля строки, которые были изменены
+        # сравниваем значения полей в двух таблицах, обновляем поля, которые были изменены
         if postgres_cleaned_data[i] != airtable_cleaned_data[i]:
             for k in range(len(postgres_cleaned_data[i])):
                 if postgres_cleaned_data[i][k] != airtable_cleaned_data[i][k]:
