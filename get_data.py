@@ -82,23 +82,35 @@ for i in airtable_cleaned_data.keys():
         ther_created_time = airtable_cleaned_data[i][4]
         cur.execute("INSERT INTO therapists_therapist(therapist_id, name, methods, photo_id, photo_link, created_time) "
                     "VALUES(%s, %s, %s, %s, %s, %s)", (
-                        ther_id, ther_name, ther_methods, ther_photo_id, ther_photo_link, ther_created_time
+                    ther_id, ther_name, ther_methods, ther_photo_id, ther_photo_link, ther_created_time
                     ))
 
 """
 Проверяем на актуальность существующие записи в Postgres, при необходимости обновляем их
 """
 for i in ids_from_postgres:
+    # получаем строку из Postgres, приводим ее к тому же виду, что и запись ключ-значение в airtable_cleaned_data
     cur.execute("SELECT therapist_id, name, methods, photo_id, photo_link, created_time FROM therapists_therapist "
                 "WHERE therapist_id = %s", (i,))
     postgres_row = cur.fetchall()
-    ther_id = i
-    ther_name = postgres_row[0][1]
-    ther_methods = postgres_row[0][2]
-    ther_photo_id = postgres_row[0][3]
-    ther_photo_link = postgres_row[0][4]
-    ther_created_time = postgres_row[0][5]
-    print(postgres_row)
+    postgres_cleaned_data = {}
+    postgres_ther_id = i
+    tmp = [postgres_row[0][1], postgres_row[0][2][1:-1].split(','), postgres_row[0][3], postgres_row[0][4], postgres_row[0][5]]
+    postgres_cleaned_data[postgres_ther_id] = tmp
+    if postgres_cleaned_data[i] == airtable_cleaned_data[i]:
+        continue
+    else:
+        different = []
+        for k in range(len(postgres_cleaned_data[i])):
+            if postgres_cleaned_data[i][k] != airtable_cleaned_data[i][k]:
+                different.append(k)
+        print(f'DIFFERENT! {postgres_cleaned_data} != {airtable_cleaned_data}')
+
+print(postgres_cleaned_data['recuJ6e1pvG6tkRdC'] == airtable_cleaned_data['recuJ6e1pvG6tkRdC'])
+    # сравниваем значения соответствующих полей в двух таблицах и при несовпадении - обновляем значение переменной
+
+
+
 # [('recuJ6e1pvG6tkRdC', 'Иннокентий', '{Гештальт-терапия,Коучинг,Психосинтез,Сказкотерапия}',
 # 'atttxEgUknSdwDjme', 'https://dl.airtable.com/.attachments/fa70928a82a214d22c4b7a2eeace79d2/e5a12360/2.jpg',
 # '2021-02-02T14:29:36.000Z')]
