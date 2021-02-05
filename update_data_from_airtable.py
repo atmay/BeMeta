@@ -19,11 +19,15 @@ def get_raw_data_from_airtable():
     """
     headers = {'Authorization': f'Bearer {api_key}'}
     try:
-        raw_data = requests.get(url=ENDPOINT, headers=headers).json()
+        raw_data = requests.get(url=ENDPOINT, headers=headers, timeout=60).json()
         return raw_data
+
     except requests.exceptions.HTTPError as err:
         print('HTTP Error occured')
         print('Response is: {content}'.format(content=err.response.content))
+
+    except requests.exceptions.ConnectTimeout:
+        print('Connection timeout occured')
 
 
 def clean_data_from_airtable(raw_data):

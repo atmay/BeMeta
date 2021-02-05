@@ -14,7 +14,7 @@
             <div class="specialist">
             <h2 class="white">{{ n }}</h2>
                 <br>
-            <button class="button"><a href="{% url 'therapist' n.pk %}">Подробнее</a></button>
+            <a href="{% url 'therapist' n.pk %}"><button class="button" >Подробнее</button></a>
             </div>
         {% endfor %}
         <br>
