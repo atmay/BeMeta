@@ -10,10 +10,7 @@
 
 @keyframes header_anim {
     from {
-        transform: translateX(-120%);
-    }
-    to {
-        transform: translateX(0);
+        transform: translateX(-100%);
     }
 }
 
@@ -56,6 +53,7 @@ div {
     text-transform: uppercase;
     color: #fff;
     align-self: center;
+    font-size: 500%;
 }
 
 .article {
@@ -65,7 +63,7 @@ div {
     min-height: 100vh;
     padding: 0 50px;
     margin: 0;
-    background-image: url("forest-438432_1920.jpg");
+    background-image: url("bg.svg");
     background-repeat: no-repeat;
     background-position: center center;
     background-size: cover;
@@ -83,19 +81,19 @@ div {
 .white {
     color: #fff;
     align-content: center;
-    font-size: x-large;
+    font-size: 210%;
 }
 
 
 .button {
-    background-color: #4CAF50; /* Green */
+    background-color: #4e9af1;
     border: none;
     color: white;
     padding: 15px 32px;
     text-align: center;
     text-decoration: none;
     font-family: "Roboto", "Lucida Grande", Verdana, Arial, sans-serif;
-    font-size: 16px;
+    font-size: 120%;
     border-radius: 4px;
     box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
     transition-duration: 0.4s;

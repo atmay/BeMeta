@@ -3,15 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <title>{{ name }}</title>
-    {% load static %}
-    <link rel="stylesheet" href="{% static 'css/ther_page_styles.css' %}">
+    <link href="static/css/therapist_styles.css" rel="stylesheet">
 </head>
 <body>
-    <img src={{ photo }} alt="Therapist Photo" width="500" height="600" class="therapist_image">
-    <h1 class="name">{{ name }}</h1>
-    <h2>Методы:</h2>
-    {% for method in methods %}
-    <button class="methods">{{ method }}</button>
-    {% endfor %}
+<div class="box">
+    <div class="therapist_image" ><img src={{ photo }} alt="Therapist Photo" width="500" height="600" class="therapist_image"></div>
+    <div><h1 class="name">{{ name }}</h1></div>
+    <div><h2 class="methods">Методы:</h2></div>
+    <div class="button_box">
+        {% for method in methods %}
+        <button class="button" style="background-color:#4e9af1">{{ method }}</button>
+        {% endfor %}
+    </div>
+</div>
 </body>
 </html>

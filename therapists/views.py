@@ -6,9 +6,6 @@ from .models import Therapist
 
 def index(request):
     therapist = Therapist.objects.all()
-    for t in therapist:
-        slug = t.pk
-        print(slug)
     return render(request, 'index.html', {'names': therapist})
 
 
