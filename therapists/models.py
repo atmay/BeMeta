@@ -9,6 +9,10 @@ class Therapist(models.Model):
     photo_link = models.URLField()
     created_time = models.CharField(max_length=100, blank=True)
 
+    def __str__(self):
+        # выводим текст поста
+        return self.name
+
 
 class RawData(models.Model):
     date = models.DateField()

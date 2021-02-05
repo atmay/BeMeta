@@ -79,7 +79,7 @@ for i in airtable_cleaned_data.keys():
                     "VALUES(%s, %s, %s, %s, %s, %s)", (
                         ther_id, ther_name, ther_methods, ther_photo_id, ther_photo_link, ther_created_time
                     ))
-
+print(airtable_cleaned_data)
 """
 Проверяем на актуальность существующие записи в Postgres, при необходимости обновляем их
 """
@@ -99,11 +99,12 @@ for i in ids_from_postgres:
     postgres_cleaned_data = {}
     postgres_ther_id = i
     tmp = [postgres_row[0][1],
-           postgres_row[0][2][1:-1].split(','),
+           postgres_row[0][2],
            postgres_row[0][3],
            postgres_row[0][4],
            postgres_row[0][5]]
     postgres_cleaned_data[postgres_ther_id] = tmp
+    print(postgres_cleaned_data)
 
     # сравниваем значения полей в двух таблицах, обновляем поля строки, которые были изменены
     if postgres_cleaned_data[i] != airtable_cleaned_data[i]:

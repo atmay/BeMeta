@@ -2,17 +2,16 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Терапевт</title>
-    <link href="/static/css/ther_page_styles.css" rel="stylesheet">
+    <title>{{ name }}</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/ther_page_styles.css' %}">
 </head>
 <body>
-    <img src="https://dl.airtable.com/.attachments/7da0d4c7963babf742137abc4e9a1a99/5f547505/1.jpg" alt="Therapist Photo"
-         width="500" height="600">
-    <h1 class="name">ИМЯ СПЕЦИАЛИСТА</h1>
+    <img src={{ photo }} alt="Therapist Photo" width="500" height="600" class="therapist_image">
+    <h1 class="name">{{ name }}</h1>
     <h2>Методы:</h2>
-    <button class="methods">Метод 1</button>
-    <button class="methods">Метод 2</button>
-    <button class="methods">Метод 3</button>
-    <button class="methods">Метод 4</button>
+    {% for method in methods %}
+    <button class="methods">{{ method }}</button>
+    {% endfor %}
 </body>
 </html>
