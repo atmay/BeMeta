@@ -1,0 +1,10 @@
+@import url("https://fonts.googleapis.com/css?family=Montserrat:700,900&subset=cyrillic");
+@import url('https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,700,700i&subset=cyrillic');
+
+body {
+    background-color: #3875d7;
+}
+
+.name {
+    color: #CC3434;
+}

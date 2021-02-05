@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Наши специалисты</title>
+    <link href="static/css/index_styles.css" rel="stylesheet">
+</head>
+<body>
+    <header class="header">
+        <h1 class="header__title">Привет!<br>Знакомься, это наши специалисты:</h1>
+    </header>
+    <div class="article">
+        {% for n in names %}
+            <div class="specialist">
+            <h2 class="white">{{ n }}</h2>
+                <br>
+            <button class="button">Подробнее</button>
+            </div>
+        {% endfor %}
+        <br>
+    </div>
+</body>
+</html>

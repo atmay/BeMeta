@@ -1,0 +1,108 @@
+@import url("https://fonts.googleapis.com/css?family=Montserrat:700,900&subset=cyrillic");
+@import url('https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,700,700i&subset=cyrillic');
+
+
+*, *:before, *:after {
+    -webkit-box-sizing: border-box; /* Нужно для мобильного WebKit */
+    -moz-box-sizing: border-box; /* Нужно для Firefox */
+    box-sizing: border-box;
+}
+
+@keyframes header_anim {
+    from {
+        transform: translateX(-120%);
+    }
+    to {
+        transform: translateX(0);
+    }
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    background: rgb(188, 174, 238);
+}
+
+h1 {
+    margin: 100px;
+    display: flex;
+    justify-content: center; /*Центрирование по горизонтали*/
+    align-items: center; /*Центрирование по вертикали */
+}
+
+div {
+    margin: 10px;
+    justify-content: center; /*Центрирование по горизонтали*/
+    align-items: center; /*Центрирование по вертикали */
+}
+
+.header {
+    display: flex;
+    min-height: 100vh;
+    padding: 8px 50px;
+    background-color: #02f;
+    background-image: url("bg.svg");
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: cover;
+    background-attachment: fixed;
+}
+
+.header__title {
+    transform: translateX(0);
+    animation-name: header_anim;
+    animation-duration: 1s;
+    animation-timing-function: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    text-transform: uppercase;
+    color: #fff;
+    align-self: center;
+}
+
+.article {
+    display: flex;
+    justify-content: space-evenly;
+    position: relative;
+    min-height: 100vh;
+    padding: 0 50px;
+    margin: 0;
+    background-image: url("forest-438432_1920.jpg");
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: cover;
+    background-attachment: fixed;
+}
+
+.name {
+    display: flex;
+    justify-content: center; /*Центрирование по горизонтали*/
+    align-items: center; /*Центрирование по вертикали*/
+    font-family: "Roboto", "Lucida Grande", Verdana, Arial, sans-serif;
+    font-size: medium;
+}
+
+.white {
+    color: #fff;
+    align-content: center;
+    font-size: x-large;
+}
+
+
+.button {
+    background-color: #4CAF50; /* Green */
+    border: none;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    font-family: "Roboto", "Lucida Grande", Verdana, Arial, sans-serif;
+    font-size: 16px;
+    border-radius: 4px;
+    box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    transition-duration: 0.4s;
+    cursor: pointer;
+}
+
+.button:hover {
+    background-color: #4CAF50; /* Green */
+    color: white;
+}
