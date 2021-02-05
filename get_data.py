@@ -1,4 +1,5 @@
 import psycopg2
+from psycopg2 import sql
 from datetime import date
 import requests
 
@@ -17,15 +18,13 @@ raw_data = requests.get(url=ENDPOINT, headers=headers).json()
 airtable_cleaned_data = {}
 
 for i in range(len(raw_data['records'])):
-    id = raw_data['records'][i]['id']
+    id_therapist = raw_data['records'][i]['id']
     tmp = [raw_data['records'][i]['fields']['Имя'],
            raw_data['records'][i]['fields']['Методы'],
            raw_data['records'][i]['fields']['Фотография'][0]['id'],
            raw_data['records'][i]['fields']['Фотография'][0]['url'],
            raw_data['records'][i]['createdTime']]
-    airtable_cleaned_data[id] = tmp
-
-print(airtable_cleaned_data)
+    airtable_cleaned_data[id_therapist] = tmp
 
 """ 
 Устанавливаем соединение с PostgreSQL
@@ -36,16 +35,12 @@ cur = conn.cursor()
 """
 Заливаем raw data в соответствующую таблицу
 """
-# raw_data_to_add = str(raw_data)
-# date_today = date.today()
-# cur.execute(
-#     "INSERT INTO therapists_rawdata (date, raw_data) "
-#     "VALUES (%s, %s)", (date_today, raw_data_to_add))
+raw_data_to_add = str(raw_data)
+date_today = date.today()
+cur.execute(
+    "INSERT INTO therapists_rawdata (date, raw_data) "
+    "VALUES (%s, %s)", (date_today, raw_data_to_add))
 
-# # опционально - можно сразу в консоли проверить успешность выгрузки
-# cur.execute("SELECT * FROM therapists_rawdata;")
-# r = cur.fetchall()
-# print(r)
 
 """
 Обновляем основную таблицу. Нужно обработать 4 случая:
@@ -82,42 +77,43 @@ for i in airtable_cleaned_data.keys():
         ther_created_time = airtable_cleaned_data[i][4]
         cur.execute("INSERT INTO therapists_therapist(therapist_id, name, methods, photo_id, photo_link, created_time) "
                     "VALUES(%s, %s, %s, %s, %s, %s)", (
-                    ther_id, ther_name, ther_methods, ther_photo_id, ther_photo_link, ther_created_time
+                        ther_id, ther_name, ther_methods, ther_photo_id, ther_photo_link, ther_created_time
                     ))
 
 """
 Проверяем на актуальность существующие записи в Postgres, при необходимости обновляем их
 """
+config = {
+    0: "name",
+    1: "methods",
+    2: "photo_id",
+    3: "photo_link",
+    4: "created_time"
+}
 for i in ids_from_postgres:
     # получаем строку из Postgres, приводим ее к тому же виду, что и запись ключ-значение в airtable_cleaned_data
-    cur.execute("SELECT therapist_id, name, methods, photo_id, photo_link, created_time FROM therapists_therapist "
+    cur.execute("SELECT therapist_id, name, methods, photo_id, photo_link, created_time "
+                "FROM therapists_therapist "
                 "WHERE therapist_id = %s", (i,))
     postgres_row = cur.fetchall()
     postgres_cleaned_data = {}
     postgres_ther_id = i
-    tmp = [postgres_row[0][1], postgres_row[0][2][1:-1].split(','), postgres_row[0][3], postgres_row[0][4], postgres_row[0][5]]
+    tmp = [postgres_row[0][1],
+           postgres_row[0][2][1:-1].split(','),
+           postgres_row[0][3],
+           postgres_row[0][4],
+           postgres_row[0][5]]
     postgres_cleaned_data[postgres_ther_id] = tmp
-    if postgres_cleaned_data[i] == airtable_cleaned_data[i]:
-        continue
-    else:
-        different = []
+
+    # сравниваем значения полей в двух таблицах, обновляем поля строки, которые были изменены
+    if postgres_cleaned_data[i] != airtable_cleaned_data[i]:
         for k in range(len(postgres_cleaned_data[i])):
             if postgres_cleaned_data[i][k] != airtable_cleaned_data[i][k]:
-                different.append(k)
-        print(f'DIFFERENT! {postgres_cleaned_data} != {airtable_cleaned_data}')
-
-print(postgres_cleaned_data['recuJ6e1pvG6tkRdC'] == airtable_cleaned_data['recuJ6e1pvG6tkRdC'])
-    # сравниваем значения соответствующих полей в двух таблицах и при несовпадении - обновляем значение переменной
-
-
-
-# [('recuJ6e1pvG6tkRdC', 'Иннокентий', '{Гештальт-терапия,Коучинг,Психосинтез,Сказкотерапия}',
-# 'atttxEgUknSdwDjme', 'https://dl.airtable.com/.attachments/fa70928a82a214d22c4b7a2eeace79d2/e5a12360/2.jpg',
-# '2021-02-02T14:29:36.000Z')]
-# postgres_table = cur.fetchall()
-# print(postgres_table)
+                cur.execute(sql.SQL("UPDATE therapists_therapist SET {} = %s "
+                                    "WHERE therapist_id = %s").format(
+                                     sql.Identifier(config[k])),
+                                     (airtable_cleaned_data[i][k], i,))
 
 conn.commit()
-
 cur.close()
 conn.close()
