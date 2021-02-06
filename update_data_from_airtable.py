@@ -91,16 +91,11 @@ def update_postgres(raw_data, airtable_cleaned_data):
     for i in airtable_cleaned_data.keys():
         if i not in ids_from_postgres:
             ther_id = i
-            ther_name = airtable_cleaned_data[i][0]
-            ther_methods = airtable_cleaned_data[i][1]
-            ther_photo_id = airtable_cleaned_data[i][2]
-            ther_photo_link = airtable_cleaned_data[i][3]
-            ther_created_time = airtable_cleaned_data[i][4]
             cur.execute(
                 "INSERT INTO therapists_therapist("
                 "therapist_id, name, methods, photo_id, photo_link, created_time) "
                 "VALUES(%s, %s, %s, %s, %s, %s)", (
-                    ther_id, ther_name, ther_methods, ther_photo_id, ther_photo_link, ther_created_time
+                    ther_id, *airtable_cleaned_data[i]
                 ))
 
     """
@@ -121,11 +116,7 @@ def update_postgres(raw_data, airtable_cleaned_data):
         postgres_row = cur.fetchall()
         postgres_cleaned_data = {}
         postgres_ther_id = i
-        tmp = [postgres_row[0][1],
-               postgres_row[0][2],
-               postgres_row[0][3],
-               postgres_row[0][4],
-               postgres_row[0][5]]
+        tmp = list(postgres_row[0][1:])
         postgres_cleaned_data[postgres_ther_id] = tmp
 
         # сравниваем значения полей в двух таблицах, обновляем поля, которые были изменены
