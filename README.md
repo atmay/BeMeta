@@ -1,4 +1,18 @@
-# Meta
+# 🌱 BeMeta: online psychotherapy service
+## Airtable to PostgreSQL sync script
+
+### Short description
+
+- Script was created for online psychotherapy service **Bemeta**
+- It helps to upload data from Airtable to PostgreSQL (or basically almost any SQL Data Base)
+- Also it includes Django web page with info about psychotherapists where transferred data are being used.
+
+#### What I used:
+- Django + Django ORM
+- PostgreSQL + psycopg2 library
+- Airtable API + requests library
+
+# BeMeta
 
 ### Привет!
 
